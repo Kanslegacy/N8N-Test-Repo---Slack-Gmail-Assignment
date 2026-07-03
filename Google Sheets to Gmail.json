@@ -1,0 +1,134 @@
+{
+  "name": "Google Sheets to Gmail",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "86dac8b1-e986-4ad4-9b07-6e9b0e9fa924",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1p2jn_kTPsdbu_KFcTkRlzyAaLPxy76iwsXobExgkkmw",
+          "mode": "list",
+          "cachedResultName": "N8n test sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p2jn_kTPsdbu_KFcTkRlzyAaLPxy76iwsXobExgkkmw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1p2jn_kTPsdbu_KFcTkRlzyAaLPxy76iwsXobExgkkmw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "88ff8186-7a9b-4f7e-acf3-283b0fdfa1f4",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "TrmEitFqAHjBDN1n",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nlet emailBody = `Hello,\n\nHere is today's student report.\n\n`;\n\nfor (const item of items) {\n  const s = item.json;\n\n  emailBody += `Name: ${s.Name}\nCourse: ${s.Course}\nStatus: ${s.Status}\n\n`;\n}\n\nemailBody += `Regards,\nn8n Automation`;\n\nreturn [{\n  json: {\n    subject: \"Student Course Report\",\n    body: emailBody\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "865a0f82-4d59-499a-a8ff-e58e8a2ad691",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "kanslegacyai@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "f092bcdf-c8d9-46c1-81ec-d74337b93813",
+      "name": "Send a message",
+      "webhookId": "cc3baad7-7f70-4df4-acd2-322fcedb2547",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6RV3iXl7ilhnhv1c",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b553a764-3c5d-4b36-bbd9-b11158507c31",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b3e974bb9e45d4f2c01abe4362455148418cf3e5cffd03c8865e3f98ceb511fe"
+  },
+  "nodeGroups": [],
+  "id": "CgdJ7st6eDCOnX14",
+  "tags": []
+}
